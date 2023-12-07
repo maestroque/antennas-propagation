@@ -41,7 +41,16 @@ function arrayFactor(array::AntennaArray, θ, ϕ)
     ψ_y = k * array.d_y * sin(ϕ) * sin(θ) + array.δy
 
     factor = abs((sin(array.N_x * ψ_x / 2))/(sin(ψ_x / 2))) * abs((sin(array.N_y * ψ_y / 2))/(sin(ψ_y / 2)))
+    return factor
+end
 
+function fieldIntensity(array::AntennaArray, θ, ϕ)
+    η_0 = 120π
+    k = 2π / array.λ
+    r = 1
+
+    E_0 = im * (η_0 * array.I * k * array.l) / (4π * r) * exp(-im * k * r)
+    return abs(E_0) * arrayFactor(array, θ, ϕ)
 end
 
 function antennaArrayFieldIntensity(a::AntennaArray, θ, ϕ)
