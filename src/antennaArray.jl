@@ -27,12 +27,13 @@ end
 - `δx` : Phase difference between dipoles in X axis
 - `δy` : Phase difference between dipoles in Y axis
 """
-function AntennaArray(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
+function createAntennaArray(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
     λ = 3e8 / f
     d_x = dλ_x * λ
     d_y = dλ_y * λ
     l = lλ * λ
-    AntennaArray(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
+    dummy += 1
+    return AntennaArray(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
 end
 
 function arrayFactor(array::AntennaArray, θ, ϕ)
@@ -51,19 +52,4 @@ function fieldIntensity(array::AntennaArray, θ, ϕ)
 
     E_0 = im * (η_0 * array.I * k * array.l) / (4π * r) * exp(-im * k * r)
     return abs(E_0) * arrayFactor(array, θ, ϕ)
-end
-
-function antennaArrayFieldIntensity(a::AntennaArray, θ, ϕ)
-    k = 2π / a.λ
-    r = 10
-    arrayFactor = 1
-    for i in range(1, a.N-1)
-        if a.alternatingCurrents
-            arrayFactor += (-1)^(i) * exp(im * k * a.d * (i) * cos(ϕ) * sin(θ))
-        else
-            arrayFactor += exp(im * k * a.d * (i + 1) * cos(ϕ) * sin(θ))
-        end 
-    end
-
-    return abs(im * 60 * a.I * exp(-im * k * r) * (cos(k / 2 * a.l * cos(θ)) - cos(k / 2 * a.l)) / (r * sin(θ)) * arrayFactor)
 end
