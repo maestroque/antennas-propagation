@@ -7,7 +7,10 @@ X(r,theta,phi) = r * sin(theta) * sin(phi)
 Y(r,theta,phi) = r * sin(theta) * cos(phi)
 Z(r,theta,phi) = r * cos(theta)
 
-function radiationPatternPlot3D(antenna::AntennaArray)
+function radiationPatternPlot3D(antenna::AntennaArray, precision::Float64)
+    θ = 0:precision:2π
+    ϕ = 0:precision:π
+
     xs = [X(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
     ys = [Y(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
     zs = [Z(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
@@ -16,15 +19,9 @@ function radiationPatternPlot3D(antenna::AntennaArray)
 end
 
 function radiationPatternPlotVertical(antenna::AntennaArray)
-    xs = [X(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
-    ys = [Y(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
-    zs = [Z(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
 
 end
 
 function radiationPatternPlotHorizontal(antenna::AntennaArray)
-    xs = [X(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
-    ys = [Y(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
-    zs = [Z(fieldIntensity(antenna, theta, phi), theta, phi) for theta in θ, phi in ϕ]
 
 end
