@@ -32,7 +32,6 @@ function createAntennaArray(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
     d_x = dλ_x * λ
     d_y = dλ_y * λ
     l = lλ * λ
-    dummy += 1
     return AntennaArray(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
 end
 
