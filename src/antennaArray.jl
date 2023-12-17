@@ -35,10 +35,10 @@ function createAntennaArray(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
     return AntennaArray(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
 end
 
-function steerAntennaArray(array::AntennaArray, θ0::Float64)
+function steerAntennaArray(array::AntennaArray, θ0::Float64, ϕ0::Float64)
     k = 2π / array.λ
-    δx = - k * array.d_x * cos(θ0)
-    δy = - k * array.d_y * cos(θ0)
+    δx = - k * array.d_x * sin(θ0) * cos(ϕ0)
+    δy = - k * array.d_y * sin(θ0) * sin(ϕ0)
 
     return AntennaArray(array.λ, array.I, array.l, array.d_x,
                         array.d_y, array.N_x, array.N_y, δx, δy)
