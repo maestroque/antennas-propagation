@@ -2,7 +2,9 @@ using Revise
 using Plots
 using PlotlyJS
 
-mutable struct AntennaArray
+abstract type AntennaArray end
+
+mutable struct AntennaArray2D <: AntennaArray
     λ::Float64
     I::Float64
     l::Float64
@@ -12,7 +14,15 @@ mutable struct AntennaArray
     N_y::Int
     δx::Float64
     δy::Float64
+end
 
+mutable struct AntennaArray1D <: AntennaArray
+    λ::Float64
+    I::Float64
+    l::Float64
+    d::Float64
+    N::Int
+    δ::Float64
 end
 
 """
@@ -27,24 +37,24 @@ end
 - `δx` : Phase difference between dipoles in X axis
 - `δy` : Phase difference between dipoles in Y axis
 """
-function createAntennaArray(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
+function createAntennaArray2D(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
     λ = 3e8 / f
     d_x = dλ_x * λ
     d_y = dλ_y * λ
     l = lλ * λ
-    return AntennaArray(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
+    return AntennaArray2D(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
 end
 
-function steerAntennaArray(array::AntennaArray, θ0::Float64, ϕ0::Float64)
+function steerAntennaArray(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
     k = 2π / array.λ
     δx = - k * array.d_x * sin(θ0) * cos(ϕ0)
     δy = - k * array.d_y * sin(θ0) * sin(ϕ0)
 
-    return AntennaArray(array.λ, array.I, array.l, array.d_x,
+    return AntennaArray2D(array.λ, array.I, array.l, array.d_x,
                         array.d_y, array.N_x, array.N_y, δx, δy)
 end
 
-function arrayFactor(array::AntennaArray, θ, ϕ)
+function arrayFactor(array::AntennaArray2D, θ, ϕ)
     k = 2π / array.λ
     ψ_x = k * array.d_x * cos(ϕ) * sin(θ) + array.δx
     ψ_y = k * array.d_y * sin(ϕ) * sin(θ) + array.δy
@@ -53,7 +63,7 @@ function arrayFactor(array::AntennaArray, θ, ϕ)
     return factor
 end
 
-function fieldIntensity(array::AntennaArray, θ, ϕ)
+function fieldIntensity(array::AntennaArray2D, θ, ϕ)
     η_0 = 120π
     k = 2π / array.λ
     r = 1
