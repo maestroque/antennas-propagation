@@ -26,9 +26,9 @@ end
 
 function directivityD(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
     
-    arrayX = createAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
+    arrayX = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_x / array.λ, array.N_x, array.δx)
-    arrayY = createAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
+    arrayY = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_y / array.λ, array.N_y, array.δy)
     D_x = directivityD(arrayX, ϕ0)
     D_y = directivityD(arrayY, θ0)
@@ -45,9 +45,9 @@ function directivityD(array::AntennaArray1D, θ0::Float64)
 end
 
 function directivityHPBW(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
-    arrayX = createAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
+    arrayX = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_x / array.λ, array.N_x, array.δx)
-    arrayY = createAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
+    arrayY = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_y / array.λ, array.N_y, array.δy)
     
     Θ_x = deg2rad(HPBW[(arrayX.d / arrayX.λ, ϕ0)])

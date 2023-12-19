@@ -38,14 +38,15 @@ end
 - `δx` : Phase difference between dipoles in X axis
 - `δy` : Phase difference between dipoles in Y axis
 """
-function createAntennaArray2D(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
+function createUniformAntennaArray2D(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy)
     λ = 3e8 / f
     d_x = dλ_x * λ
     d_y = dλ_y * λ
     l = lλ * λ
     return AntennaArray2D(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
 end
-function createAntennaArray1D(f, I, lλ, dλ, N, δ)
+
+function createUniformAntennaArray1D(f, I, lλ, dλ, N, δ)
     λ = 3e8 / f
     d = dλ * λ
     l = lλ * λ
