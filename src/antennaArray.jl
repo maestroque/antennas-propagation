@@ -61,6 +61,15 @@ function steerAntennaArray(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
                         array.d_y, array.N_x, array.N_y, δx, δy)
 end
 
+function hansenWoodyardArray(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
+    k = 2π / array.λ
+    δx = - k * array.d_x * sin(θ0) * cos(ϕ0) - 2.92 / array.N_x
+    δy = - k * array.d_y * sin(θ0) * sin(ϕ0) - 2.92 / array.N_y
+
+    return AntennaArray2D(array.λ, array.I, array.l, array.d_x,
+                          array.d_y, array.N_x, array.N_y, δx, δy)
+end
+
 function arrayFactor(array::AntennaArray2D, θ, ϕ)
     k = 2π / array.λ
     ψ_x = k * array.d_x * cos(ϕ) * sin(θ) + array.δx
