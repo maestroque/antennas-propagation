@@ -2,6 +2,7 @@ using Revise
 using Plots
 using PlotlyJS
 includet("antennaArray.jl")
+includet("radiation.jl")
 
 X(r,theta,phi) = r * sin(theta) * sin(phi)
 Y(r,theta,phi) = r * sin(theta) * cos(phi)

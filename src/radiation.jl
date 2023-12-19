@@ -15,7 +15,7 @@ HPBW[(0.25, π/6)] = 22
 HPBW[(0.25, π/3)] = 14
 HPBW[(0.25, π/2)] = 10
 
-function fieldIntensity(array::AntennaArray2D, θ, ϕ)
+function fieldIntensity(array::UniformAntennaArray2D, θ, ϕ)
     η_0 = 120π
     k = 2π / array.λ
     r = 1
@@ -24,7 +24,16 @@ function fieldIntensity(array::AntennaArray2D, θ, ϕ)
     return abs(E_0) * arrayFactor(array, θ, ϕ)
 end
 
-function directivityD(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
+function fieldIntensity(array::AntennaArray1D, θ, ϕ)
+    η_0 = 120π
+    k = 2π / array.λ
+    r = 1
+
+    E_0 = im * (η_0 * k * array.l) / (4π * r) * exp(-im * k * r)
+    return abs(E_0) * abs(arrayFactor(array, θ, ϕ))
+end
+
+function directivityD(array::UniformAntennaArray2D, θ0::Float64, ϕ0::Float64)
     
     arrayX = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_x / array.λ, array.N_x, array.δx)
@@ -38,13 +47,13 @@ function directivityD(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
     return π * cos(ϕ0) * D_x * D_y
 end
 
-function directivityD(array::AntennaArray1D, θ0::Float64)
+function directivityD(array::UniformAntennaArray1D, θ0::Float64)
     D_0 = 2 * array.N * array.d / array.λ
     
     return D_0 * HPBW[(array.d / array.λ, 0)] / HPBW[(array.d / array.λ, θ0)]
 end
 
-function directivityHPBW(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
+function directivityHPBW(array::UniformAntennaArray2D, θ0::Float64, ϕ0::Float64)
     arrayX = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
                                   array.d_x / array.λ, array.N_x, array.δx)
     arrayY = createUniformAntennaArray1D(3e8 / array.λ, array.I, array.l / array.λ, 
@@ -61,7 +70,7 @@ function directivityHPBW(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
     return 32400 / (Θ_h * Ψ_h)
 end
 
-function sincDirectivity(array::AntennaArray1D)
+function sincDirectivity(array::UniformAntennaArray1D)
     k = 2π / array.λ
     b1 = array.N * (-k * array.d + array.δ) / 2
     b2 = array.N * (k * array.d + array.δ) / 2

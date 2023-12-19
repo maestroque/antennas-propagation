@@ -5,7 +5,7 @@ using SpecialFunctions
 
 abstract type AntennaArray end
 
-mutable struct AntennaArray2D <: AntennaArray
+mutable struct UniformAntennaArray2D <: AntennaArray
     λ::Float64
     I::Float64
     l::Float64
@@ -17,13 +17,22 @@ mutable struct AntennaArray2D <: AntennaArray
     δy::Float64
 end
 
-mutable struct AntennaArray1D <: AntennaArray
+mutable struct UniformAntennaArray1D <: AntennaArray
     λ::Float64
     I::Float64
     l::Float64
     d::Float64
     N::Int
     δ::Float64
+end
+
+mutable struct AntennaArray1D <: AntennaArray
+    λ::Float64
+    I::Array{Float64}
+    l::Float64
+    d::Array{Float64}
+    N::Int
+    δ::Array{Float64}
 end
 
 """
@@ -43,39 +52,61 @@ function createUniformAntennaArray2D(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy
     d_x = dλ_x * λ
     d_y = dλ_y * λ
     l = lλ * λ
-    return AntennaArray2D(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
+    return UniformAntennaArray2D(λ, I, l, d_x, d_y, N_x, N_y, δx, δy)
+end
+
+function createAntennaArray1D(f, I::Array{Float64}, lλ, dλ::Array{Float64}, N, δ::Array{Float64})
+    λ = 3e8 / f
+    d = dλ .* λ
+    l = lλ * λ
+    return AntennaArray1D(λ, I, l, d, N, δ)
 end
 
 function createUniformAntennaArray1D(f, I, lλ, dλ, N, δ)
     λ = 3e8 / f
     d = dλ * λ
     l = lλ * λ
-    return AntennaArray1D(λ, I, l, d, N, δ)
+    return UniformAntennaArray1D(λ, I, l, d, N, δ)
 end
 
-function steerAntennaArray(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
+function steerAntennaArray(array::UniformAntennaArray2D, θ0::Float64, ϕ0::Float64)
     k = 2π / array.λ
     δx = - k * array.d_x * sin(θ0) * cos(ϕ0)
     δy = - k * array.d_y * sin(θ0) * sin(ϕ0)
 
-    return AntennaArray2D(array.λ, array.I, array.l, array.d_x,
+    return UniformAntennaArray2D(array.λ, array.I, array.l, array.d_x,
                         array.d_y, array.N_x, array.N_y, δx, δy)
 end
 
-function hansenWoodyardArray(array::AntennaArray2D, θ0::Float64, ϕ0::Float64)
+function hansenWoodyardArray(array::UniformAntennaArray2D, θ0::Float64, ϕ0::Float64)
     k = 2π / array.λ
     δx = - k * array.d_x * sin(θ0) * cos(ϕ0) - 2.92 / array.N_x
     δy = - k * array.d_y * sin(θ0) * sin(ϕ0) - 2.92 / array.N_y
 
-    return AntennaArray2D(array.λ, array.I, array.l, array.d_x,
+    return UniformAntennaArray2D(array.λ, array.I, array.l, array.d_x,
                           array.d_y, array.N_x, array.N_y, δx, δy)
 end
 
-function arrayFactor(array::AntennaArray2D, θ, ϕ)
+function arrayFactor(array::UniformAntennaArray2D, θ, ϕ)
     k = 2π / array.λ
     ψ_x = k * array.d_x * cos(ϕ) * sin(θ) + array.δx
     ψ_y = k * array.d_y * sin(ϕ) * sin(θ) + array.δy
 
     factor = abs((sin(array.N_x * ψ_x / 2))/(sin(ψ_x / 2))) * abs((sin(array.N_y * ψ_y / 2))/(sin(ψ_y / 2)))
     return factor
+end
+
+"""
+Co-linear antenna array
+"""
+function arrayFactor(array::AntennaArray1D, θ, ϕ)
+    k = 2π / array.λ
+    ψ = k * array.d[1] * cos(θ) + δ[1]
+
+    sum = 1
+    for i in range(1, array.N)
+        sum += array.I[i] * exp(im * i * ψ)
+    end
+
+    return sum
 end
