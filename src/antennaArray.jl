@@ -28,11 +28,11 @@ end
 
 mutable struct AntennaArray1D <: AntennaArray
     λ::Float64
-    I::Array{Float64}
+    I::Vector{Float64}
     l::Float64
-    d::Array{Float64}
+    d::Vector{Float64}
     N::Int
-    δ::Array{Float64}
+    δ::Vector{Float64}
 end
 
 """
@@ -56,6 +56,10 @@ function createUniformAntennaArray2D(f, I, lλ, dλ_x, dλ_y, N_x, N_y, δx, δy
 end
 
 function createAntennaArray1D(f, I::Array{Float64}, lλ, dλ::Array{Float64}, N, δ::Array{Float64})
+    if length(I) != N
+        throw(ArgumentError("Length of current array I must be equal to N, you might need createUniformAntennaArray1D"))
+    end
+
     λ = 3e8 / f
     d = dλ .* λ
     l = lλ * λ
@@ -97,11 +101,11 @@ function arrayFactor(array::UniformAntennaArray2D, θ, ϕ)
 end
 
 """
-Co-linear antenna array
+Vertical (Z-axis) antenna array
 """
 function arrayFactor(array::AntennaArray1D, θ, ϕ)
     k = 2π / array.λ
-    ψ = k * array.d[1] * cos(θ) + δ[1]
+    ψ = k * array.d[1] * cos(θ) + array.δ[1]
 
     sum = 1
     for i in range(1, array.N)

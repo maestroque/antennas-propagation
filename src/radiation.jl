@@ -4,6 +4,8 @@ using PlotlyJS
 
 includet("antennaArray.jl")
 
+db(x) = 10log10(x)
+
 # HPBW values taken from the HPBW-Antenna Length-θ_0 chart
 HPBW = Dict{Tuple{Any, Any}, Any}()
 HPBW[(0.5, 0)] = 37
@@ -30,7 +32,8 @@ function fieldIntensity(array::AntennaArray1D, θ, ϕ)
     r = 1
 
     E_0 = im * (η_0 * k * array.l) / (4π * r) * exp(-im * k * r)
-    return abs(E_0) * abs(arrayFactor(array, θ, ϕ))
+    E = abs(E_0) * abs(arrayFactor(array, θ, ϕ))
+    return E
 end
 
 function directivityD(array::UniformAntennaArray2D, θ0::Float64, ϕ0::Float64)
